@@ -49,18 +49,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Plugins\ITabsterPluginAttributes.cs" />
     <Compile Include="Plugins\ITabsterPlugin.cs" />
-    <Compile Include="Printing\PageCountPrintController .cs" />
-    <Compile Include="Printing\TablaturePrintDocument.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Printing\TablaturePrintDocumentSettings.cs" />
-    <Compile Include="Printing\TablaturePrintDocumentSettingsBase.cs" />
-    <Compile Include="Printing\TablaturePrintPageEventArgs.cs" />
     <Compile Include="Searching\TablatureSearchQuery.cs" />
     <Compile Include="Searching\TablatureSearchResult.cs" />
     <Compile Include="Searching\TablatureSearchEngineException.cs" />
