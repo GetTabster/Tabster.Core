@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Tabster.Core</id>
+    <version>1.0</version>
+    <title>Tabster.Core</title>
+    <authors>Nate Shoffner</authors>
+    <owners>Nate Shoffner</owners>
+    <licenseUrl>https://github.com/GetTabster/Tabster.Core/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/GetTabster/Tabster.Core</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Core Tabster functionality and types.</description>
+    <releaseNotes>* Initial deployment.</releaseNotes>
+    <copyright>Copyright Nate Shoffner 2016</copyright>
+    <tags>tabster</tags>
+  </metadata>
+  <files>
+    <file src="bin\Release\Tabster.Core.dll" target="lib\net35\Tabster.Core.dll" />
+    <file src="bin\Release\Tabster.Core.XML" target="lib\net35\Tabster.Core.XML" />
+  </files>
+</package>
