@@ -12,8 +12,9 @@ before_build:
 - ps: nuget restore
 build:
   project: Tabster.Core.sln
-after_build:
-- 'nuget pack Tabster.Core.nuspec -Version {version}'
+after_test:
+- ps: >-
+    .\Deploy\nuget.ps1
 artifacts:
 - path: '*.nupkg'
   name: nuget_package
