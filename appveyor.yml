@@ -13,7 +13,7 @@ before_build:
 build:
   project: Tabster.Core.sln
 after_build:
-- nuget pack Tabster.Core.nuspec -Version $(APPVEYOR_BUILD_VERSION)
+- 'nuget pack Tabster.Core.nuspec -Version {version}'
 artifacts:
 - path: '*.nupkg'
   name: nuget_package
