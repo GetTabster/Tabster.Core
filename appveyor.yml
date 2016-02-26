@@ -14,7 +14,7 @@ build:
   project: Tabster.Core.sln
 after_test:
 - ps: >-
-    .\Deploy\nuget.ps1
+    .\nuget_pack.ps1
 artifacts:
 - path: '*.nupkg'
   name: nuget_package
