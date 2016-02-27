@@ -8,37 +8,37 @@ using System.Text.RegularExpressions;
 namespace Tabster.Core.Types
 {
     /// <summary>
+    ///     Provides enumerated values to use to set version string formatting options.
+    /// </summary>
+    [Flags]
+    public enum TabsterVersionFormatFlags
+    {
+        /// <summary>
+        ///     Specifies that no options are set.
+        /// </summary>
+        None = 0x0,
+
+        /// <summary>
+        ///     Specifies that the build version should be appended to the version string. (Ex: 1.0.2 (Build 12))
+        /// </summary>
+        Build = 0x1,
+
+        /// <summary>
+        ///     Specifies that the hash should be appended to the version string. (Ex: 1.0.2 c42ff11)
+        /// </summary>
+        Hash = 0x2,
+
+        /// <summary>
+        ///     Specifies that the version string should be truncated of trailing zeros.
+        /// </summary>
+        Truncated = 0x4,
+    }
+
+    /// <summary>
     ///     Represents the version number.
     /// </summary>
     public class TabsterVersion : IComparable, IComparable<TabsterVersion>, IEquatable<TabsterVersion>
     {
-        /// <summary>
-        ///     Provides enumerated values to use to set version string formatting options.
-        /// </summary>
-        [Flags]
-        public enum TabsterVersionFormatFlags
-        {
-            /// <summary>
-            ///     Specifies that no options are set.
-            /// </summary>
-            None = 0x0,
-
-            /// <summary>
-            ///     Specifies that the build version should be appended to the version string. (Ex: 1.0.2 (Build 12))
-            /// </summary>
-            Build = 0x1,
-
-            /// <summary>
-            ///     Specifies that the hash should be appended to the version string. (Ex: 1.0.2 c42ff11)
-            /// </summary>
-            Hash = 0x2,
-
-            /// <summary>
-            ///     Specifies that the version string should be truncated of trailing zeros.
-            /// </summary>
-            Truncated = 0x4,
-        }
-
         private static readonly Regex BuildRegex = new Regex(@"\(Build (\d+\)\)", RegexOptions.Compiled);
 
         /// <summary>
