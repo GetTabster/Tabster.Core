@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using System.Text.RegularExpressions;
 
 #endregion
 
@@ -38,11 +39,68 @@ namespace Tabster.Core.Types
             Truncated = 0x4,
         }
 
+        private static readonly Regex BuildRegex = new Regex(@"\(Build (\d+\)\)", RegexOptions.Compiled);
+
         /// <summary>
         ///     Initializes a new TabsterVersion.
         /// </summary>
         public TabsterVersion()
         {
+        }
+
+        /// <summary>
+        ///     Initializes a new TabsterVersion based off of formatted string.
+        /// </summary>
+        /// <param name="str">Formatted version string.</param>
+        public TabsterVersion(string str)
+        {
+            var decimalSplit = str.Split('.');
+
+            if (decimalSplit.Length == 0 || decimalSplit.Length > 3)
+                throw new ArgumentException("String must contain between 1 and 3 decimals.", str);
+
+            var major = 0;
+            var minor = 0;
+            var revision = 0;
+            var build = 0;
+            string hash = null;
+
+            if (!int.TryParse(decimalSplit[0], out major))
+                throw new ArgumentException("Version components must contain integers.", str);
+            if (decimalSplit.Length > 1 && !int.TryParse(decimalSplit[1], out minor))
+                throw new ArgumentException("Version components must contain integers.", str);
+            if (decimalSplit.Length > 2 && !int.TryParse(decimalSplit[2], out minor))
+                throw new ArgumentException("Version components must contain integers.", str);
+            if (decimalSplit.Length > 3 && !int.TryParse(decimalSplit[3], out revision))
+                throw new ArgumentException("Version components must contain integers.", str);
+            if (decimalSplit.Length > 4 && !int.TryParse(decimalSplit[4], out build))
+                throw new ArgumentException("Version components must contain integers.", str);
+
+            if (build == 0)
+            {
+                // extract build version from (Build num) format
+                var match = BuildRegex.Match(str);
+                if (match.Groups.Count > 1)
+                {
+                    int.TryParse(match.Groups[1].Value, out build);
+                }
+            }
+
+            var spaceSplit = str.Split(' ');
+            if (spaceSplit.Length > 1)
+            {
+                var last = spaceSplit[spaceSplit.Length - 1];
+
+                // sha-1 length check
+                if (last.Length == 7 || last.Length == 40)
+                    hash = last;
+            }
+
+            Major = major;
+            Minor = minor;
+            Revision = revision;
+            Build = build;
+            Hash = hash;
         }
 
         /// <summary>
