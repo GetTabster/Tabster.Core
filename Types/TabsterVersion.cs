@@ -39,7 +39,7 @@ namespace Tabster.Core.Types
     /// </summary>
     public class TabsterVersion : IComparable, IComparable<TabsterVersion>, IEquatable<TabsterVersion>
     {
-        private static readonly Regex BuildRegex = new Regex(@"\(Build (\d+\)\)", RegexOptions.Compiled);
+        private static readonly Regex BuildRegex = new Regex(@"\(Build (\d+)\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         /// <summary>
         ///     Initializes a new TabsterVersion.
@@ -54,10 +54,14 @@ namespace Tabster.Core.Types
         /// <param name="str">Formatted version string.</param>
         public TabsterVersion(string str)
         {
-            var decimalSplit = str.Split('.');
+            if (str == null)
+                throw new ArgumentNullException("str");
 
-            if (decimalSplit.Length == 0 || decimalSplit.Length > 3)
-                throw new ArgumentException("String must contain between 1 and 3 decimals.", str);
+            var spaceSplit = str.Split(' ');
+            var decimalSplit = spaceSplit[0].Split('.');
+
+            if (decimalSplit.Length < 2)
+                throw new ArgumentException("String must contain at least 2 decimals.", str);
 
             var major = 0;
             var minor = 0;
@@ -76,9 +80,9 @@ namespace Tabster.Core.Types
             if (decimalSplit.Length > 4 && !int.TryParse(decimalSplit[4], out build))
                 throw new ArgumentException("Version components must contain integers.", str);
 
-            if (build == 0)
+            // extract build version from (Build num) format
+            if (str.IndexOf("(Build ", StringComparison.OrdinalIgnoreCase) >= 0 && build == 0)
             {
-                // extract build version from (Build num) format
                 var match = BuildRegex.Match(str);
                 if (match.Groups.Count > 1)
                 {
@@ -86,7 +90,6 @@ namespace Tabster.Core.Types
                 }
             }
 
-            var spaceSplit = str.Split(' ');
             if (spaceSplit.Length > 1)
             {
                 var last = spaceSplit[spaceSplit.Length - 1];
@@ -127,6 +130,9 @@ namespace Tabster.Core.Types
         /// <param name="hash"></param>
         public TabsterVersion(Version version, string hash = null)
         {
+            if (version == null)
+                throw new ArgumentNullException("version");
+
             Major = version.Major;
             Minor = version.Minor;
             Revision = version.Build;
