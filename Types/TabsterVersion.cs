@@ -19,19 +19,25 @@ namespace Tabster.Core.Types
         None = 0x0,
 
         /// <summary>
-        ///     Specifies that the build version should be appended to the version string. (Ex: 1.0.2 (Build 12))
+        ///     Specifies that the build version should be appended to the version string.
         /// </summary>
         Build = 0x1,
 
         /// <summary>
+        ///     Specifies that the build version should be appended in a human-friendly format to the version string. (Ex: 1.0.2
+        ///     (Build 12))
+        /// </summary>
+        BuildString = 0x2,
+
+        /// <summary>
         ///     Specifies that the hash should be appended to the version string. (Ex: 1.0.2 c42ff11)
         /// </summary>
-        Hash = 0x2,
+        Hash = 0x4,
 
         /// <summary>
         ///     Specifies that the version string should be truncated of trailing zeros.
         /// </summary>
-        Truncated = 0x4,
+        Truncated = 0x8,
     }
 
     /// <summary>
@@ -331,7 +337,7 @@ namespace Tabster.Core.Types
             var baseStr = string.Format("{0}.{1}.{2}", Major, Minor, Revision);
 
             // include build component if it's not to be appended
-            if ((flags & TabsterVersionFormatFlags.Build) != TabsterVersionFormatFlags.Build)
+            if ((flags & TabsterVersionFormatFlags.Build) == TabsterVersionFormatFlags.Build)
                 baseStr += string.Format(".{0}", Build);
 
             // truncate version string
@@ -344,7 +350,7 @@ namespace Tabster.Core.Types
                     baseStr = string.Format("{0}.0", baseStr);
             }
 
-            if ((flags & TabsterVersionFormatFlags.Build) == TabsterVersionFormatFlags.Build && Build > 0)
+            if ((flags & TabsterVersionFormatFlags.BuildString) == TabsterVersionFormatFlags.BuildString && Build > 0)
                 baseStr += string.Format(" (Build {0})", Build);
 
             if ((flags & TabsterVersionFormatFlags.Hash) == TabsterVersionFormatFlags.Hash && !string.IsNullOrEmpty(Hash))
