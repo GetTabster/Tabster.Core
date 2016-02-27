@@ -332,7 +332,7 @@ namespace Tabster.Core.Types
                     baseStr = string.Format("{0}.0", baseStr);
             }
 
-            if ((flags & TabsterVersionFormatFlags.Build) == TabsterVersionFormatFlags.Build)
+            if ((flags & TabsterVersionFormatFlags.Build) == TabsterVersionFormatFlags.Build && Build > 0)
                 baseStr += string.Format(" (Build {0})", Build);
 
             if ((flags & TabsterVersionFormatFlags.Hash) == TabsterVersionFormatFlags.Hash && !string.IsNullOrEmpty(Hash))
