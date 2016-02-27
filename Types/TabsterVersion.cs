@@ -12,6 +12,33 @@ namespace Tabster.Core.Types
     public class TabsterVersion : IComparable, IComparable<TabsterVersion>, IEquatable<TabsterVersion>
     {
         /// <summary>
+        ///     Provides enumerated values to use to set version string formatting options.
+        /// </summary>
+        [Flags]
+        public enum TabsterVersionFormatFlags
+        {
+            /// <summary>
+            ///     Specifies that no options are set.
+            /// </summary>
+            None = 0x0,
+
+            /// <summary>
+            ///     Specifies that the build version should be appended to the version string. (Ex: 1.0.2 (Build 12))
+            /// </summary>
+            Build = 0x1,
+
+            /// <summary>
+            ///     Specifies that the hash should be appended to the version string. (Ex: 1.0.2 c42ff11)
+            /// </summary>
+            Hash = 0x2,
+
+            /// <summary>
+            ///     Specifies that the version string should be truncated of trailing zeros.
+            /// </summary>
+            Truncated = 0x4,
+        }
+
+        /// <summary>
         ///     Initializes a new TabsterVersion.
         /// </summary>
         public TabsterVersion()
@@ -19,7 +46,7 @@ namespace Tabster.Core.Types
         }
 
         /// <summary>
-        /// Initializes a new TabsterVersion based off of the specified components.
+        ///     Initializes a new TabsterVersion based off of the specified components.
         /// </summary>
         /// <param name="major">Major component.</param>
         /// <param name="minor">Minor component.</param>
@@ -107,12 +134,7 @@ namespace Tabster.Core.Types
 
         public override string ToString()
         {
-            var str = string.Format("{0}.{1}.{2}.{3}", Major, Minor, Revision, Build);
-
-            if (!string.IsNullOrEmpty(Hash))
-                str += string.Format("-{0}", Hash);
-
-            return str;
+            return ToString(TabsterVersionFormatFlags.None);
         }
 
         public override int GetHashCode()
@@ -222,6 +244,37 @@ namespace Tabster.Core.Types
         public static bool operator >=(TabsterVersion v1, TabsterVersion v2)
         {
             return (v2 <= v1);
+        }
+
+        /// <summary>
+        ///     Returns the version string using the specified format flags.
+        /// </summary>
+        /// <param name="flags">Formatting option flags.</param>
+        public string ToString(TabsterVersionFormatFlags flags)
+        {
+            var baseStr = string.Format("{0}.{1}.{2}", Major, Minor, Revision);
+
+            // include build component if it's not to be appended
+            if ((flags & TabsterVersionFormatFlags.Build) != TabsterVersionFormatFlags.Build)
+                baseStr += string.Format(".{0}", Build);
+
+            // truncate version string
+            if ((flags & TabsterVersionFormatFlags.Truncated) == TabsterVersionFormatFlags.Truncated)
+            {
+                while (baseStr.EndsWith("0") || baseStr.EndsWith("."))
+                    baseStr = baseStr.Remove(baseStr.Length - 1, 1);
+
+                if (!baseStr.Contains("."))
+                    baseStr = string.Format("{0}.0", baseStr);
+            }
+
+            if ((flags & TabsterVersionFormatFlags.Build) == TabsterVersionFormatFlags.Build)
+                baseStr += string.Format(" (Build {0})", Build);
+
+            if ((flags & TabsterVersionFormatFlags.Hash) == TabsterVersionFormatFlags.Hash && !string.IsNullOrEmpty(Hash))
+                baseStr += " " + Hash;
+
+            return baseStr;
         }
     }
 }
