@@ -90,6 +90,7 @@ namespace Tabster.Core.Types
                 }
             }
 
+            // check for hash after space
             if (spaceSplit.Length > 1)
             {
                 var last = spaceSplit[spaceSplit.Length - 1];
@@ -97,6 +98,22 @@ namespace Tabster.Core.Types
                 // sha-1 length check
                 if (last.Length == 7 || last.Length == 40)
                     hash = last;
+            }
+
+            else
+            {
+                // check for hash after dash
+                // standard convention for AssemblyInformationalVersion patching
+                var dashSplit = str.Split('-');
+
+                if (dashSplit.Length > 1)
+                {
+                    var last = dashSplit[dashSplit.Length - 1];
+
+                    // sha-1 length check
+                    if (last.Length == 7 || last.Length == 40)
+                        hash = last;
+                }
             }
 
             Major = major;
