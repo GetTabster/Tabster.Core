@@ -1,11 +1,15 @@
 ﻿#region
 
 using System;
+using Tabster.Core.Types;
 
 #endregion
 
 namespace Tabster.Core.Plugins
 {
+    /// <summary>
+    ///     Represents a third-party plugin to be loaded.
+    /// </summary>
     public interface ITabsterPlugin
     {
         /// <summary>
@@ -31,7 +35,7 @@ namespace Tabster.Core.Plugins
         /// <summary>
         ///     Plugin version.
         /// </summary>
-        Version Version { get; }
+        TabsterVersion Version { get; }
 
         /// <summary>
         ///     Plugin website.
