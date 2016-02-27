@@ -72,13 +72,13 @@ namespace Tabster.Core.Types
 
             if (!int.TryParse(decimalSplit[0], out major))
                 throw new ArgumentException("Version components must contain integers.", str);
-            if (decimalSplit.Length > 1 && !int.TryParse(decimalSplit[1], out major))
+            if (decimalSplit.Length >= 1 && !int.TryParse(decimalSplit[0], out major))
                 throw new ArgumentException("Version components must contain integers.", str);
-            if (decimalSplit.Length > 2 && !int.TryParse(decimalSplit[2], out minor))
+            if (decimalSplit.Length >= 2 && !int.TryParse(decimalSplit[1], out minor))
                 throw new ArgumentException("Version components must contain integers.", str);
-            if (decimalSplit.Length > 3 && !int.TryParse(decimalSplit[3], out revision))
+            if (decimalSplit.Length >= 3 && !int.TryParse(decimalSplit[2], out revision))
                 throw new ArgumentException("Version components must contain integers.", str);
-            if (decimalSplit.Length > 4 && !int.TryParse(decimalSplit[4], out build))
+            if (decimalSplit.Length >= 4 && !int.TryParse(decimalSplit[3], out build))
                 throw new ArgumentException("Version components must contain integers.", str);
 
             // extract build version from (Build num) format
