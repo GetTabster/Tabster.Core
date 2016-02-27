@@ -57,7 +57,8 @@ namespace Tabster.Core.Types
             if (str == null)
                 throw new ArgumentNullException("str");
 
-            var spaceSplit = str.Split(' ');
+            var dashSplit = str.Split('-');
+            var spaceSplit = dashSplit[0].Split(' ');
             var decimalSplit = spaceSplit[0].Split('.');
 
             if (decimalSplit.Length < 2)
@@ -90,30 +91,24 @@ namespace Tabster.Core.Types
                 }
             }
 
-            // check for hash after space
-            if (spaceSplit.Length > 1)
+            // check for hash after dash
+            if (dashSplit.Length > 1)
             {
-                var last = spaceSplit[spaceSplit.Length - 1];
+                var last = dashSplit[dashSplit.Length - 1];
 
                 // sha-1 length check
                 if (last.Length == 7 || last.Length == 40)
                     hash = last;
             }
 
-            else
+                // check for hash after space
+            else if (spaceSplit.Length > 1)
             {
-                // check for hash after dash
-                // standard convention for AssemblyInformationalVersion patching
-                var dashSplit = str.Split('-');
+                var last = spaceSplit[spaceSplit.Length - 1];
 
-                if (dashSplit.Length > 1)
-                {
-                    var last = dashSplit[dashSplit.Length - 1];
-
-                    // sha-1 length check
-                    if (last.Length == 7 || last.Length == 40)
-                        hash = last;
-                }
+                // sha-1 length check
+                if (last.Length == 7 || last.Length == 40)
+                    hash = last;
             }
 
             Major = major;
