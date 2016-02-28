@@ -30,14 +30,20 @@ namespace Tabster.Core.Types
         BuildString = 0x2,
 
         /// <summary>
-        ///     Specifies that the hash should be appended to the version string. (Ex: 1.0.2 c42ff11)
+        ///     Specifies that the commit id should be appended to the version string using the full format. (Ex: 1.0.2
+        ///     57bf835dd5a21e031df7d8940c9483125b1575e0)
         /// </summary>
-        Hash = 0x4,
+        CommitFull = 0x4,
+
+        /// <summary>
+        ///     Specifies that the commit id should be appended to the version string using the short format. (Ex: 1.0.2 57bf835)
+        /// </summary>
+        CommitShort = 0x8,
 
         /// <summary>
         ///     Specifies that the version string should be truncated of trailing zeros.
         /// </summary>
-        Truncated = 0x8,
+        Truncated = 0x10,
     }
 
     /// <summary>
@@ -74,7 +80,7 @@ namespace Tabster.Core.Types
             var minor = 0;
             var revision = 0;
             var build = 0;
-            string hash = null;
+            Sha1Hash hash = null;
 
             if (!int.TryParse(decimalSplit[0], out major))
                 throw new ArgumentException("Version components must contain integers.", str);
@@ -97,31 +103,24 @@ namespace Tabster.Core.Types
                 }
             }
 
-            // check for hash after dash
+            // check for commit id after dash
             if (dashSplit.Length > 1)
             {
                 var last = dashSplit[dashSplit.Length - 1];
-
-                // sha-1 length check
-                if (last.Length == 7 || last.Length == 40)
-                    hash = last;
+                Sha1Hash.TryParseHash(last, out hash);
             }
 
-                // check for hash after space
-            else if (spaceSplit.Length > 1)
+            else if (spaceSplit.Length > 1) // check for commit id after space
             {
                 var last = spaceSplit[spaceSplit.Length - 1];
-
-                // sha-1 length check
-                if (last.Length == 7 || last.Length == 40)
-                    hash = last;
+                Sha1Hash.TryParseHash(last, out hash);
             }
 
             Major = major;
             Minor = minor;
             Revision = revision;
             Build = build;
-            Hash = hash;
+            Commit = hash;
         }
 
         /// <summary>
@@ -131,22 +130,22 @@ namespace Tabster.Core.Types
         /// <param name="minor">Minor component.</param>
         /// <param name="revision">Revision component.</param>
         /// <param name="build">Build component.</param>
-        /// <param name="hash">Hash component.</param>
-        public TabsterVersion(int major, int minor, int revision, int build, string hash = null)
+        /// <param name="commit">Commit component.</param>
+        public TabsterVersion(int major, int minor, int revision, int build, Sha1Hash commit = null)
         {
             Major = major;
             Minor = minor;
             Revision = revision;
             Build = build;
-            Hash = hash;
+            Commit = commit;
         }
 
         /// <summary>
         ///     Initializes a new TabsterVersion based off of a System.Version object.
         /// </summary>
         /// <param name="version">The System.Version object.</param>
-        /// <param name="hash"></param>
-        public TabsterVersion(Version version, string hash = null)
+        /// <param name="commit">Commit component.</param>
+        public TabsterVersion(Version version, Sha1Hash commit = null)
         {
             if (version == null)
                 throw new ArgumentNullException("version");
@@ -155,7 +154,7 @@ namespace Tabster.Core.Types
             Minor = version.Minor;
             Revision = version.Build;
             Build = version.Revision;
-            Hash = hash;
+            Commit = commit;
         }
 
         /// <summary>
@@ -179,9 +178,9 @@ namespace Tabster.Core.Types
         public int Revision { get; private set; }
 
         /// <summary>
-        ///     Gets the value of the version control hash.
+        ///     Gets the value of the version control commit id.
         /// </summary>
-        public string Hash { get; private set; }
+        public Sha1Hash Commit { get; private set; }
 
         #region Overrides of Object
 
@@ -353,10 +352,76 @@ namespace Tabster.Core.Types
             if ((flags & TabsterVersionFormatFlags.BuildString) == TabsterVersionFormatFlags.BuildString && Build > 0)
                 baseStr += string.Format(" (Build {0})", Build);
 
-            if ((flags & TabsterVersionFormatFlags.Hash) == TabsterVersionFormatFlags.Hash && !string.IsNullOrEmpty(Hash))
-                baseStr += " " + Hash;
-
+            if (Commit != null)
+            {
+                if ((flags & TabsterVersionFormatFlags.CommitFull) == TabsterVersionFormatFlags.CommitFull)
+                    baseStr += string.Format(" {0}", Commit);
+                else if ((flags & TabsterVersionFormatFlags.CommitShort) == TabsterVersionFormatFlags.CommitShort)
+                    baseStr += string.Format(" {0}", Commit.ToShorthandString());
+            }
             return baseStr;
+        }
+
+        /// <summary>
+        ///     Represents a Sha-1 hash.
+        /// </summary>
+        public class Sha1Hash
+        {
+            private const int MinHashLength = 7;
+            private const int MaxHashLength = 40;
+            private readonly string _hash;
+
+            internal Sha1Hash(string hash)
+            {
+                if (hash == null)
+                    throw new ArgumentNullException("hash");
+
+                if (hash.Length != MinHashLength || hash.Length != MaxHashLength)
+                    throw new ArgumentException(string.Format("Hash must be between {0} and {1}characters long.", MinHashLength, MaxHashLength));
+                _hash = hash;
+            }
+
+            #region Overrides of Object
+
+            /// <summary>
+            ///     Returns the hash string.
+            /// </summary>
+            public override string ToString()
+            {
+                return _hash;
+            }
+
+            #endregion
+
+            /// <summary>
+            ///     Returns a shorthanded version of the hash.
+            /// </summary>
+            /// <returns></returns>
+            public string ToShorthandString()
+            {
+                return _hash.Substring(0, MinHashLength);
+            }
+
+            /// <summary>
+            ///     Returns whether the hash uses the shorthand format.
+            /// </summary>
+            /// <returns>true if the has is shorthanded; otherwise, false.</returns>
+            public bool IsShortHand()
+            {
+                return _hash.Length == MinHashLength;
+            }
+
+            internal static bool TryParseHash(string str, out Sha1Hash hash)
+            {
+                if (str.Length == MinHashLength || str.Length == MaxHashLength)
+                {
+                    hash = new Sha1Hash(str);
+                    return true;
+                }
+
+                hash = null;
+                return false;
+            }
         }
     }
 }
