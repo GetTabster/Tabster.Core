@@ -376,8 +376,9 @@ namespace Tabster.Core.Types
                 if (hash == null)
                     throw new ArgumentNullException("hash");
 
-                if (hash.Length != MinHashLength || hash.Length != MaxHashLength)
-                    throw new ArgumentException(string.Format("Hash must be between {0} and {1}characters long.", MinHashLength, MaxHashLength));
+                if (hash.Length != MinHashLength && hash.Length != MaxHashLength)
+                    throw new ArgumentException(string.Format("Hash must be between {0} and {1} characters long.", MinHashLength, MaxHashLength));
+
                 _hash = hash;
             }
 
