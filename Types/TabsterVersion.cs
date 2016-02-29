@@ -198,14 +198,14 @@ namespace Tabster.Core.Types
                 else
                     return -1;
 
-            if (Build != other.Build)
-                if (Build > other.Build)
+            if (Revision != other.Revision)
+                if (Revision > other.Revision)
                     return 1;
                 else
                     return -1;
 
-            if (Revision != other.Revision)
-                if (Revision > other.Revision)
+            if (Build != other.Build)
+                if (Build > other.Build)
                     return 1;
                 else
                     return -1;
