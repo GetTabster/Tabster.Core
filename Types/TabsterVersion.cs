@@ -215,7 +215,7 @@ namespace Tabster.Core.Types
 
         public override string ToString()
         {
-            return ToString(TabsterVersionFormatFlags.None);
+            return ToString(TabsterVersionFormatFlags.Build);
         }
 
         public override int GetHashCode()
@@ -349,9 +349,7 @@ namespace Tabster.Core.Types
                     baseStr = string.Format("{0}.0", baseStr);
             }
 
-            if ((flags & TabsterVersionFormatFlags.None) == TabsterVersionFormatFlags.None)
-                baseStr += string.Format(".{0}", Build); // append build number even if it's 0
-            else if ((flags & TabsterVersionFormatFlags.BuildString) == TabsterVersionFormatFlags.BuildString && Build > 0)
+            if ((flags & TabsterVersionFormatFlags.BuildString) == TabsterVersionFormatFlags.BuildString && Build > 0)
                 baseStr += string.Format(" (Build {0})", Build);
 
             if (Commit != null)
